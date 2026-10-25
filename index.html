@@ -203,12 +203,13 @@ function linhaMun(r){
 function renderUrnas(){
   const b = calc(D.br);
   const est = b.est ? b.esnt * b.vv2 / b.est : 0;
+  const mi = n => pf(n/1e6, 1) + ' mi';
   $('#urnas').innerHTML = `<div class="urnas">
-    <div><span class="muted">Seções totalizadas</span><br><b>${nf(b.st)}</b> de ${nf(b.ts)} <b>(${pf(b.apur)}%)</b></div>
-    <div><span class="muted">Faltam</span><br><b>${nf(b.faltam)}</b> seções</div>
-    <div><span class="muted">Eleitores em seções pendentes</span><br><b>${nf(b.esnt)}</b></div>
-    <div><span class="muted">Válidos que faltam (estim.)</span><br><b>${nf(Math.round(est))}</b></div>
-    <div><span class="muted">Comparecimento 2ºT</span><br><b>${nf(b.c2)}</b> ${b.est ? '('+pf(pct(b.c2,b.est))+'%)' : ''}</div>
+    <div><span class="muted">Seções apuradas</span><br><b>${nf(b.st)}</b> de ${nf(b.ts)} <b>(${pf(b.apur)}%)</b></div>
+    <div><span class="muted">Faltam apurar</span><br><b>${nf(b.faltam)}</b> seções · <b>${mi(b.esnt)}</b> de eleitores</div>
+    <div><span class="muted">Já apurado</span><br><b>${nf(b.c2)}</b> votantes · <b>${nf(b.vv2)}</b> válidos</div>
+    <div><span class="muted">Comparecimento nas seções apuradas</span><br><b>${b.est ? pf(pct(b.c2,b.est))+'%' : '-'}</b> <span class="muted">(1ºT: ${pf(pct(b.c1,b.te))}%)</span></div>
+    <div><span class="muted">Válidos que faltam (estim.)</span><br><b>${b.vv2 ? '≈ '+mi(est) : '-'}</b>${b.vv2 ? ` <span class="muted">total ≈ ${mi(b.vv2+est)}</span>` : ''}</div>
     <div><span class="muted">TSE</span><br><b>${esc(b.hg||'-')}</b>${b.md ? ' <span class="tag">DEFINIDO</span>' : ''}</div>
   </div><div class="prog"><div style="width:${b.apur}%"></div></div>`;
   const j = D.justo;
