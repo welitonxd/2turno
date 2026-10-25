@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SlopApura · 2º turno x 1º turno (Presidente)</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--green:#3fb950;--yellow:#d29922;--cyan:#22d3ee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:13px;padding:12px}
+header{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+h1{font-size:1.15rem}
+h3{font-size:.85rem;margin:0 0 6px}
+.sub,.muted{color:var(--muted)}
+.sub{font-size:.8rem}
+.dir{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:.78rem;color:var(--muted)}
+button,select,input{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:.78rem}
+button{cursor:pointer}
+.box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:10px}
+.urnas{display:flex;gap:18px;flex-wrap:wrap;align-items:baseline}
+.urnas b{font-size:1.05rem;font-variant-numeric:tabular-nums}
+.prog{height:6px;background:#21262d;border-radius:3px;overflow:hidden;margin-top:6px}
+.prog div{height:100%;background:var(--green);transition:width .6s}
+.cands{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cand{border-left:4px solid;padding:4px 10px}
+.cand .nm{font-size:1rem;font-weight:700}
+.cand .big{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.cand .lin{display:flex;gap:14px;flex-wrap:wrap;margin-top:3px;font-variant-numeric:tabular-nums}
+.pos{color:var(--green)}.neg{color:#f85149}
+.alerta{color:var(--yellow)}
+.nota{color:var(--cyan);font-size:.78rem;margin-top:6px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.tabs button.on{background:#1f6feb;border-color:#1f6feb}
+.abas{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.abas .tabs{display:contents}
+#fbusca{margin-left:auto;width:150px;min-width:0;flex:0 1 150px}
+.filtros #fbusca{margin-left:0}
+.filtro-pais{display:inline-flex;align-items:center;gap:6px;margin:0 0 6px;font-size:.78rem}
+.filtro-pais button{padding:0 6px}
+.filtros{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px;font-size:.78rem;color:var(--muted)}
+.tw{overflow:auto;max-height:70vh}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+th,td{padding:3px 6px;border-bottom:1px solid #21262d;text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:#1c222b;cursor:pointer;font-weight:600;color:#c9d1d9;font-size:.74rem}
+th:first-child,td:first-child,td.l,th.l{text-align:left}
+tr.click{cursor:pointer}
+tr:hover td{background:#1b2230}
+.tw td:first-child{position:sticky;left:0;z-index:1;background:var(--card);box-shadow:1px 0 0 var(--border)}
+.tw th:first-child{left:0;z-index:3;box-shadow:1px 0 0 var(--border)}
+.tw tr:hover td:first-child{background:#1b2230}
+.sub3{font-size:.68rem;color:var(--muted);line-height:1.15}
+.cor{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini td,.mini th{padding:2px 5px}
+.tag{font-size:.65rem;padding:1px 5px;border-radius:3px;background:#1c2530;color:#58a6ff;margin-left:4px}
+.tag.sim{background:#3a2d12;color:var(--yellow)}
+.err{color:#f85149}
+.chip{display:inline-block;padding:0 6px;border-radius:9px;font-size:.72rem;font-weight:700;line-height:1.55;white-space:nowrap}
+.chip.pos{background:#12331f;color:#3fb950}.chip.neg{background:#3a1416;color:#f85149}.chip.zero{background:#21262d;color:var(--muted)}
+.chip.g{font-size:1rem;padding:1px 10px}
+.cmp{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:4px;font-variant-numeric:tabular-nums}
+.cmp .de{color:var(--muted);font-size:.9rem}
+.cmp .seta{color:var(--muted);font-size:1.1rem}
+.duelo{display:grid;grid-template-columns:20px 1fr;gap:2px 4px;align-items:center;min-width:170px}
+.duelo .lb{font-size:.6rem;color:var(--muted);text-align:right}
+.barra{position:relative;display:flex;height:8px;border-radius:3px;overflow:hidden;background:#21262d}
+.barra.t1{height:5px;opacity:.7}
+.barra i{display:flex;align-items:center;justify-content:center;height:100%;font-style:normal;font-size:.72rem;font-weight:700;color:#0d1117;overflow:hidden;white-space:nowrap}
+.barra::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:#e6edf3;opacity:.75}
+.duelo.g{grid-template-columns:58px 1fr;gap:4px 8px;margin-top:10px}
+.duelo.g .lb{font-size:.74rem}
+.duelo.g .barra{height:24px;border-radius:5px}
+.duelo.g .barra.t1{height:18px;opacity:.85}
+.legenda{display:flex;gap:12px;flex-wrap:wrap;font-size:.7rem;color:var(--muted);margin-top:4px;margin-left:66px}
+footer{margin-top:8px;font-size:.7rem;color:var(--muted);text-align:center}
+@media (max-width:800px){.cands,.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>2º turno x 1º turno</h1>
+  <span class="sub">Presidente · SlopApura · divulgação oficial TSE</span>
+  <span id="simtag"></span>
+  <div class="dir"><span id="status"></span><button id="btn-auto">Auto 60s: ON</button><span id="clock"></span></div>
+</header>
+
+<div class="box" id="urnas"></div>
+<div class="box"><div id="cands"></div><div class="nota" id="virada"></div></div>
+<div class="box" id="justo"></div>
+
+<div class="box">
+  <div class="abas" id="abas-topo"><div class="tabs" id="tabs"></div><input id="fbusca" type="search" placeholder="buscar cidade"></div>
+  <div id="aba"></div>
+</div>
+<p class="muted" id="avisos" style="font-size:.72rem"></p>
+<footer>Fonte: resultados.tse.jus.br · 1ºT fechado x 2ºT parcial · exterior antecipado via BU por seção · SlopApura (WTFNMFPL)</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const QP = new URLSearchParams(location.search);
+const SRC = QP.get('src') || 'https://wide-acoustic-cart-satisfactory.trycloudflare.com/comparativo.json';
+const CORES = {PT:'#ff6b6b', PL:'#5b9bff'};
+const PALETA = ['#ff6b6b','#5b9bff','#3fb950','#d29922'];
+let D = null, auto = true, timer = null, aba = QP.get('aba') || 'ufs';
+let ord = {}, filtroUF = QP.get('uf') || '', busca = '', filtroPais = '';
+const casa = t => !busca || semAcento(t).includes(semAcento(busca));
+const casaMun = r => casa(r.nm) || (r.uf === 'zz' && casa(D.paises[r.cd] || ''));
+const ufsComBusca = () => new Set(D.municipios.filter(m => casa(m[2]) || (m[0] === 'zz' && casa(D.paises[m[1]] || ''))).map(m => m[0]));
+
+const nf = n => (n||0).toLocaleString('pt-BR');
+const pf = (n,c=2) => (isFinite(n)?n:0).toLocaleString('pt-BR',{minimumFractionDigits:c,maximumFractionDigits:c});
+const pct = (a,b) => b ? a*100/b : 0;
+const sinal = (n,c=2,suf=' p.p.') => `<span class="${n>0?'pos':(n<0?'neg':'')}">${n>0?'+':''}${pf(n,c)}${suf}</span>`;
+const sinalv = n => `<span class="${n>0?'pos':(n<0?'neg':'')}">${n>0?'+':''}${nf(n)}</span>`;
+const cor = i => CORES[(D.candidatos[i]||{}).partido] || PALETA[i%PALETA.length];
+const nomeC = i => (D.candidatos[i]||{}).nome || '?';
+const semAcento = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+const ABREV = {
+  'Emirados Árabes Unidos':'Emirados Árabes', 'Guiana Francesa (França)':'Guiana Francesa', 'República Dominicana':'Rep. Dominicana',
+  'São Tomé e Príncipe':'São Tomé', 'Bósnia e Herzegovina':'Bósnia', 'Antígua e Barbuda':'Antígua', 'Trinidad e Tobago':'Trinidad',
+  'República do Congo':'Rep. do Congo', 'Guiné Equatorial':'Guiné Equat.', 'Estados Unidos':'EUA',
+  'SANTA CRUZ DE LA SIERRA':'SANTA CRUZ', 'SANTA ELENA DE UAIRÉN':'SANTA ELENA', 'ST GEORGES DE LOYAPOCK':'ST GEORGES',
+  'PEDRO JUAN CABALLERO':'P. J. CABALLERO', 'KINGSTON-JAMAICA':'KINGSTON', 'SALTO DEL GUAIRÁ':'SALTO GUAIRÁ',
+  'PUERTO QUIJARRO':'PTO. QUIJARRO', 'PUERTO IGUAZÚ':'PTO. IGUAZÚ'
+};
+const TITULOS = {PRESIDENTE:'PRES.', GOVERNADOR:'GOV.', MARECHAL:'MAL.', GENERAL:'GEN.', PROFESSOR:'PROF.', PROFESSORA:'PROFA.',
+  DOUTOR:'DR.', CORONEL:'CEL.', SENADOR:'SEN.', DEPUTADO:'DEP.', 'CAPITÃO':'CAP.', TENENTE:'TEN.', SARGENTO:'SGT.', MONSENHOR:'MONS.',
+  COMENDADOR:'COM.', ENGENHEIRO:'ENG.', DESEMBARGADOR:'DES.', PADRE:'PE.', SANTA:'STA.', SANTO:'STO.', 'SÃO':'S.', NOSSA:'N.',
+  SENHORA:'SRA.', CONSELHEIRO:'CONS.', MINISTRO:'MIN.', ALMIRANTE:'ALM.', MAJOR:'MAJ.', FREI:'FR.'};
+const CONECT = new Set(['DE','DA','DO','DAS','DOS','E']);
+function curto(n){
+  if(ABREV[n]) return ABREV[n];
+  if(n.length <= 20) return n;
+  const w = n.split(' ').map(x => TITULOS[x] || x);
+  for(let i = w.length-2; i >= 1 && w.join(' ').length > 25; i--)
+    if(!CONECT.has(w[i]) && !w[i].endsWith('.') && !w[i].includes('-')) w[i] = w[i][0] + '.';
+  const a = w.join(' ');
+  return a.length <= 25 ? a : a.slice(0,24) + '…';
+}
+const abrev = s => { s = String(s ?? ''); const c = curto(s); return c !== s ? `<span title="${esc(s)}">${esc(c)}</span>` : esc(s); };
+const esc = s => String(s??'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function clock(){ $('#clock').textContent = new Date().toLocaleTimeString('pt-BR'); }
+setInterval(clock,1000); clock();
+
+function calc(L){
+  const p1 = L.v1.map(v => pct(v,L.vv1)), p2 = L.v2.map(v => pct(v,L.vv2));
+  const ambos = !!(L.vv1 && L.vv2);
+  const dpp = p2.map((p,i) => ambos ? p - p1[i] : 0);
+  const marg1 = p1[0]-p1[1], marg2 = p2[0]-p2[1];
+  const lid1 = L.v1[0] >= L.v1[1] ? 0 : 1, lid2 = L.v2[0] >= L.v2[1] ? 0 : 1;
+  return {...L, p1, p2, dpp, marg1, marg2, ambos, swing: ambos ? marg2-marg1 : 0, lid1, lid2,
+          saldo2: L.v2[0]-L.v2[1], faltam: Math.max(0,(L.ts||0)-(L.st||0)), apur: L.pst||0};
+}
+
+const sigla = i => (D.candidatos[i]||{}).partido || nomeC(i).split(' ')[0];
+const chip = (n,c=1,g='') => `<span class="chip ${g} ${n>0.005?'pos':(n<-0.005?'neg':'zero')}">${n>0?'+':''}${pf(n,c)}${g?' p.p.':''}</span>`;
+
+function barra(v, vv, cls, rotulo){
+  if(!vv) return `<div class="barra ${cls}"></div>`;
+  const a = pct(v[0],vv), b = pct(v[1],vv), o = Math.max(0, 100-a-b);
+  const seg = (w,c,t) => `<i style="width:${w}%;background:${c}${t?';color:'+t:''}">${rotulo && w>=7 ? pf(w,1)+'%' : ''}</i>`;
+  return `<div class="barra ${cls}">${seg(a,cor(0))}${o>0.05 ? seg(o,'#4b5563','#e6edf3') : ''}${seg(b,cor(1))}</div>`;
+}
+
+function duelo(r, grande){
+  if(!grande && !r.vv1 && !r.vv2) return '<span class="muted">-</span>';
+  const l1 = grande ? '1º turno' : '1º', l2 = grande ? '2º turno' : '2º';
+  return `<div class="duelo${grande?' g':''}"><span class="lb">${l1}</span>${barra(r.v1,r.vv1,'t1',grande)}<span class="lb">${l2}</span>${barra(r.v2,r.vv2,'t2',grande)}</div>`;
+}
+
+function legenda(){
+  return `<div class="legenda"><span><span class="cor" style="background:${cor(0)}"></span>${esc(nomeC(0))}</span><span><span class="cor" style="background:#4b5563"></span>outros candidatos do 1º turno</span><span><span class="cor" style="background:${cor(1)}"></span>${esc(nomeC(1))}</span><span>linha branca = 50%</span></div>`;
+}
+
+function mud(r,i){
+  if(!r.vv2) return `<span class="muted">${r.vv1 ? pf(r.p1[i],1)+'% → ?' : '-'}</span>`;
+  if(!r.vv1) return `<b>${pf(r.p2[i],1)}%</b>`;
+  return `<span class="muted">${pf(r.p1[i],1)}</span> → <b>${pf(r.p2[i],1)}%</b> ${chip(r.dpp[i])}`;
+}
+
+function ganho(r){
+  if(!r.ambos) return '-';
+  const i = r.swing >= 0 ? 0 : 1;
+  return `<span class="chip" style="background:${cor(i)}26;color:${cor(i)}">▲ ${esc(sigla(i))} ${pf(Math.abs(r.swing),1)}</span>`;
+}
+
+function comparacao(r, votos2, extra){
+  const cards = D.candidatos.map((c,i) => `<div class="cand" style="border-color:${cor(i)}">
+      <div class="nm">${c.n} · ${esc(c.nome)} <span class="muted" style="font-weight:400;font-size:.78rem">${esc(c.partido)} · vice ${esc(c.vice)}</span></div>
+      <div class="cmp"><span class="de">1º turno ${r.vv1 ? pf(r.p1[i])+'%' : '-'}</span><span class="seta">→</span>
+        <span class="big" style="color:${cor(i)}">${r.vv2 ? pf(r.p2[i])+'%' : '<span class="muted" style="font-size:1rem">aguardando</span>'}</span>${r.ambos ? chip(r.dpp[i],2,'g') : ''}</div>
+      <div class="lin muted">votos no 2º turno: <b style="color:var(--text)">${nf(votos2[i])}</b> · no 1º turno: ${nf(r.v1[i])}</div>
+      ${extra ? `<div class="lin muted">${extra(i)}</div>` : ''}
+    </div>`).join('');
+  return `<div class="cands">${cards}</div>${duelo(r, true)}${legenda()}`;
+}
+
+function linhaMun(r){
+  const o = {}; D.mcols.forEach((c,i) => o[c] = r[i]); return calc(o);
+}
+
+function renderUrnas(){
+  const b = calc(D.br);
+  const est = b.est ? b.esnt * b.vv2 / b.est : 0;
+  $('#urnas').innerHTML = `<div class="urnas">
+    <div><span class="muted">Seções totalizadas</span><br><b>${nf(b.st)}</b> de ${nf(b.ts)} <b>(${pf(b.apur)}%)</b></div>
+    <div><span class="muted">Faltam</span><br><b>${nf(b.faltam)}</b> seções</div>
+    <div><span class="muted">Eleitores em seções pendentes</span><br><b>${nf(b.esnt)}</b></div>
+    <div><span class="muted">Válidos que faltam (estim.)</span><br><b>${nf(Math.round(est))}</b></div>
+    <div><span class="muted">Comparecimento 2ºT</span><br><b>${nf(b.c2)}</b> ${b.est ? '('+pf(pct(b.c2,b.est))+'%)' : ''}</div>
+    <div><span class="muted">TSE</span><br><b>${esc(b.hg||'-')}</b>${b.md ? ' <span class="tag">DEFINIDO</span>' : ''}</div>
+  </div><div class="prog"><div style="width:${b.apur}%"></div></div>`;
+  const j = D.justo;
+  $('#cands').innerHTML = comparacao(b, b.v2, j ? i => `Δ votos nos municípios 100% apurados: ${sinalv(j.v2[i]-j.v1[i])}` : null);
+  const lid = b.lid2, seg = 1-lid, diff = Math.abs(b.saldo2);
+  let txt = '';
+  if(b.vv2){
+    txt = `${esc(nomeC(lid))} lidera por ${nf(diff)} votos (${pf(Math.abs(b.marg2))} p.p.). Em relação ao 1º turno, cresceu mais: ${ganho(b)}.`;
+    if(est > 0){
+      const prec = (est + diff) / (2*est) * 100;
+      txt += prec > 100 ? ` <b>${esc(nomeC(seg))} já não alcança</b> (precisaria de ${pf(prec,1)}% dos válidos restantes).`
+                        : ` Pra virar, ${esc(nomeC(seg))} precisa de <b>${pf(prec,1)}%</b> dos ~${nf(Math.round(est))} válidos restantes.`;
+    }
+  } else txt = 'Totalização do 2ºT ainda não começou (agregado oficial zerado). O exterior já aparece na aba Exterior via BU por seção.';
+  $('#virada').innerHTML = txt;
+}
+
+function renderJusto(){
+  const j = D.justo;
+  if(!j){ $('#justo').innerHTML = '<h3>Comparação justa (municípios 100% apurados no 2ºT)</h3><span class="muted">Nenhum município fechou ainda.</span>'; return; }
+  const out1 = j.vv1 - j.v1.reduce((a,b)=>a+b,0);
+  const linhas = [
+    ...D.candidatos.map((c,i) => [`<span class="cor" style="background:${cor(i)}"></span>${esc(c.nome)}`, j.v1[i], j.v2[i], pct(j.v1[i],j.vv1), pct(j.v2[i],j.vv2)]),
+    ['Outros candidatos (1ºT)', out1, 0, pct(out1,j.vv1), 0],
+    ['Brancos + nulos', j.bn1, j.bn2, pct(j.bn1,j.c1), pct(j.bn2,j.c2)],
+    ['Comparecimento', j.c1, j.c2, pct(j.c1,j.te), pct(j.c2,j.te)],
+    ['Abstenção', j.te-j.c1, j.te-j.c2, pct(j.te-j.c1,j.te), pct(j.te-j.c2,j.te)],
+  ];
+  const cj = calc({...j, ts:0, st:0, pst:100});
+  $('#justo').innerHTML = `<h3>Comparação justa: ${nf(j.municipios)} municípios/cidades 100% apurados no 2ºT <span class="muted" style="font-weight:400">(${nf(j.te)} eleitores, ${pf(pct(j.te, D.br.te))}% do eleitorado)</span> ${ganho(cj)}</h3>
+  ${duelo(cj, true)}${legenda()}
+  <div class="tw" style="margin-top:8px"><table class="mini"><tr><th class="l"></th><th>1ºT votos</th><th>2ºT votos</th><th>Δ votos</th><th>1ºT %</th><th>2ºT %</th><th>Δ p.p.</th></tr>
+  ${linhas.map(l => `<tr><td>${l[0]}</td><td>${nf(l[1])}</td><td>${nf(l[2])}</td><td>${sinalv(l[2]-l[1])}</td><td>${pf(l[3])}%</td><td>${pf(l[4])}%</td><td>${sinal(l[4]-l[3])}</td></tr>`).join('')}
+  </table></div><div class="muted" style="font-size:.72rem;margin-top:4px">% dos candidatos sobre válidos; brancos/nulos sobre comparecimento; comparecimento/abstenção sobre eleitorado do 2ºT.</div>`;
+}
+
+function tabela(id, cols, linhas, onclick){
+  const o = ord[id] || {k: cols.find(c=>c.s)?.k || cols[0].k, d: -1};
+  const col = cols.find(c => c.k === o.k) || cols[0];
+  const val = col.v || (r => r[col.k]);
+  const ls = [...linhas].sort((a,b) => { const x = val(a), y = val(b); return (x>y?1:x<y?-1:0) * o.d; });
+  const lim = ls.slice(0, 400);
+  const h = `<div class="tw"><table><tr>${cols.map(c => `<th class="${c.l?'l':''}" data-t="${id}" data-k="${c.k}">${c.t}${o.k===c.k?(o.d>0?' ▲':' ▼'):''}</th>`).join('')}</tr>
+    ${lim.map((r,i) => `<tr class="${onclick?'click':''}" data-i="${i}">${cols.map(c => `<td class="${c.l?'l':''}">${c.f ? c.f(r) : esc(r[c.k])}</td>`).join('')}</tr>`).join('')}
+    </table></div>${ls.length>lim.length ? `<div class="muted">mostrando ${lim.length} de ${nf(ls.length)} (ordene ou filtre)</div>` : ''}`;
+  setTimeout(() => {
+    document.querySelectorAll(`th[data-t="${id}"]`).forEach(th => th.onclick = () => {
+      const k = th.dataset.k, cur = ord[id] || o;
+      ord[id] = {k, d: cur.k===k ? -cur.d : -1}; renderAba();
+    });
+    if(onclick) document.querySelectorAll(`#aba tr.click`).forEach(tr => tr.onclick = () => onclick(lim[+tr.dataset.i]));
+  });
+  return h;
+}
+
+function colsCand(){
+  const cs = [{k:'duelo', t:'1º x 2º turno', l:1, v:r=>r.p2[0], f:r=>duelo(r)}];
+  D.candidatos.forEach((c,i) => cs.push({k:'d_'+i, t:`<span class="cor" style="background:${cor(i)}"></span>${esc(sigla(i))} 1º → 2º`, v:r=>r.ambos ? r.dpp[i] : -999, f:r=>mud(r,i)}));
+  cs.push({k:'swing', t:'Cresceu<br>mais', v:r=>Math.abs(r.swing), f:ganho});
+  cs.push({k:'saldo2', t:'Saldo 2ºT', v:r=>Math.abs(r.saldo2), f:r=>r.vv2?`<span style="color:${cor(r.lid2)}">${nf(Math.abs(r.saldo2))} ${esc(sigla(r.lid2))}</span>`:'-'});
+  return cs;
+}
+
+function venc(r){
+  const a = `<span style="color:${cor(r.lid1)}">${esc(sigla(r.lid1))}</span>`;
+  if(!r.vv2) return a + ' → ?';
+  const b = `<span style="color:${cor(r.lid2)}">${esc(sigla(r.lid2))}</span>`;
+  return a + ' → ' + b + (r.lid1!==r.lid2 ? ' <span class="tag">virou</span>' : '');
+}
+
+function abaUFs(){
+  const comB = busca ? ufsComBusca() : null;
+  const ls = D.ufs.map(u => calc(u)).filter(u => !busca || casa(u.uf) || casa(u.nome) || comB.has(u.uf));
+  return tabela('ufs', [
+    {k:'uf', t:'UF', l:1, f:r=>`<b title="${esc(r.nome)}">${r.uf.toUpperCase()}</b>`},
+    {k:'apur', t:'Apurado', s:1, f:r=>pf(r.apur)+'%'},
+    {k:'faltam', t:'Faltam seções', f:r=>nf(r.faltam)},
+    {k:'esnt', t:'Eleitores pend.', f:r=>nf(r.esnt)},
+    ...colsCand(),
+    {k:'lid', t:'Líder 1ºT → 2ºT', l:1, v:r=>r.lid2, f:venc},
+  ], ls, r => { filtroUF = r.uf; aba = 'mun'; renderTabs(); renderAba(); });
+}
+
+function municipios(){ return D.municipios.map(linhaMun); }
+
+function nomeMun(r){
+  const ond = r.uf === 'zz' ? abrev(D.paises[r.cd] || 'Exterior') : r.uf.toUpperCase();
+  return `${abrev(r.nm)}<div class="sub3">${ond}</div>`;
+}
+
+function abaMun(){
+  const ufs = ['', ...D.ufs.map(u=>u.uf)];
+  let ls = municipios();
+  if(filtroUF) ls = ls.filter(r => r.uf === filtroUF);
+  if(busca) ls = ls.filter(casaMun);
+  const f = `<div class="filtros">UF <select id="fuf">${ufs.map(u => `<option value="${u}" ${u===filtroUF?'selected':''}>${u?u.toUpperCase():'todas'}</option>`).join('')}</select>
+    <span id="slot-busca"></span><span>${nf(ls.length)} municípios</span></div>`;
+  setTimeout(() => { $('#fuf').onchange = e => { filtroUF = e.target.value; renderAba(); }; });
+  return f + tabela('mun', [
+    {k:'nm', t:'Município', l:1, f:nomeMun},
+    {k:'apur', t:'Apurado', s:1, f:r=>pf(r.apur)+'%'},
+    {k:'te', t:'Eleitores', f:r=>nf(r.te)},
+    ...colsCand(),
+    {k:'lid', t:'Líder 1ºT → 2ºT', l:1, v:r=>r.lid2, f:venc},
+  ], ls);
+}
+
+function ranking(ls, val, n, fmt){
+  return `<table class="mini">${[...ls].sort((a,b)=>val(b)-val(a)).slice(0,n).map((r,i) => `<tr><td class="l">${i+1}. ${abrev(r.nm||r.nome)} <span class="muted">${r.uf==='zz' ? abrev(D.paises[r.cd]||'exterior') : (r.uf||'').toUpperCase()}</span></td><td>${fmt(r)}</td></tr>`).join('')}</table>`;
+}
+
+function abaMelhores(){
+  const ms = municipios().filter(r => r.vv2 > 0 && casaMun(r));
+  const comB = busca ? ufsComBusca() : null;
+  const ufs = D.ufs.map(calc).filter(r => r.vv2 > 0 && (!busca || casa(r.uf) || casa(r.nome) || comB.has(r.uf)));
+  if(!ms.length && !ufs.length) return '<span class="muted">Sem 2ºT apurado ainda. Exterior antecipado: aba Exterior.</span>';
+  const minV = +(QP.get('minv') || 1000);
+  return `<div class="g2">${D.candidatos.map((c,i) => {
+    const o = 1-i;
+    return `<div><h3 style="color:${cor(i)}">${esc(c.nome)}</h3>
+      <div class="g2">
+        <div><div class="muted">UFs: maior % no 2ºT</div>${ranking(ufs, r=>r.p2[i], 10, r=>pf(r.p2[i])+'%')}</div>
+        <div><div class="muted">UFs: maior saldo de votos</div>${ranking(ufs, r=>r.v2[i]-r.v2[o], 10, r=>sinalv(r.v2[i]-r.v2[o]))}</div>
+        <div><div class="muted">Municípios: maior saldo de votos</div>${ranking(ms, r=>r.v2[i]-r.v2[o], 15, r=>sinalv(r.v2[i]-r.v2[o]))}</div>
+        <div><div class="muted">Municípios: maior % (≥ ${nf(minV)} válidos)</div>${ranking(ms.filter(r=>r.vv2>=minV), r=>r.p2[i], 15, r=>pf(r.p2[i])+'%')}</div>
+        <div><div class="muted">Mais cresceu vs 1ºT (Δ p.p., ≥ ${nf(minV)} válidos)</div>${ranking(ms.filter(r=>r.vv2>=minV), r=>r.dpp[i], 15, r=>sinal(r.dpp[i]))}</div>
+        <div><div class="muted">Mais ganhou na margem (Δ margem a favor)</div>${ranking(ms.filter(r=>r.vv2>=minV), r=>(i?-1:1)*r.swing, 15, r=>sinal((i?-1:1)*r.swing))}</div>
+      </div></div>`;
+  }).join('')}</div>`;
+}
+
+function abaViradas(){
+  const ls = municipios().filter(r => r.vv2 > 0 && r.lid1 !== r.lid2 && casaMun(r));
+  if(!ls.length) return '<span class="muted">Nenhuma virada (líder entre os dois finalistas no 1ºT x 2ºT) até agora.</span>';
+  return `<div class="muted" style="margin-bottom:4px">${nf(ls.length)} municípios onde o líder entre os finalistas mudou do 1ºT pro 2ºT (parcial: confira o % apurado).</div>` +
+    tabela('vir', [
+      {k:'nm', t:'Município', l:1, f:nomeMun},
+      {k:'apur', t:'Apurado', f:r=>pf(r.apur)+'%'},
+      {k:'te', t:'Eleitores', s:1, f:r=>nf(r.te)},
+      {k:'lid', t:'1ºT → 2ºT', l:1, v:r=>r.lid2, f:venc},
+      ...colsCand(),
+    ], ls);
+}
+
+function linhaBU(r){
+  const par = r.secoes_1t > 0 && r.vv2m !== undefined;
+  const L = calc({...r, v1: par ? r.v1 : [0,0], vv1: par ? r.vv1 : 0, v2: par ? r.v2m : r.v2, vv2: par ? r.vv2m : r.vv2,
+                  ts: r.secoes, st: r.secoes_bu, pst: pct(r.secoes_bu, r.secoes)});
+  return {...L, nome: r.nm || r.pais, vt2: r.v2, saldo2: r.v2[0]-r.v2[1], lid2: r.v2[0]>=r.v2[1]?0:1, cob: pct(r.secoes_bu, r.secoes)};
+}
+
+function oficialZZ(){
+  const porCd = {}, porPais = {};
+  D.municipios.forEach(m => {
+    if(m[0] !== 'zz') return;
+    const o = linhaMun(m), p = D.paises[m[1]] || '?';
+    porCd[m[1]] = o;
+    const a = porPais[p] = porPais[p] || {st:0, ts:0, v2:o.v2.map(() => 0)};
+    a.st += o.st; a.ts += o.ts; o.v2.forEach((v,i) => a.v2[i] += v);
+  });
+  return {porCd, porPais};
+}
+
+function confere(bu, of){
+  if(!of || !of.ts) return {k:0, h:'<span class="muted">-</span>'};
+  if(of.st < of.ts) return {k:1, h:`<span class="muted">${of.st ? pf(pct(of.st, of.ts),0)+'% apurado' : 'aguardando'}</span>`};
+  if(bu.secoes_bu < bu.secoes) return {k:2, h:'<span class="muted">BU incompleto</span>'};
+  if(bu.vt2.every((v,i) => v === of.v2[i])) return {k:3, h:'<span class="chip pos">✓ confere</span>'};
+  const det = D.candidatos.map((c,i) => `${c.partido}: BU ${nf(bu.vt2[i])} x oficial ${nf(of.v2[i])}`).join(' · ');
+  return {k:4, h:`<span class="chip neg" title="${esc(det)}">⚠ difere</span>`};
+}
+
+function colsBU(){
+  return [{k:'cob', t:'Seções c/ BU', v:r=>r.secoes_bu, f:r=>`${nf(r.secoes_bu)}/${nf(r.secoes)}`},
+          {k:'conf', t:'Oficial', v:r=>r.conf.k, f:r=>r.conf.h},
+          {k:'c2', t:'Votaram', s:1, f:r=>nf(r.c2)},
+          ...D.candidatos.map((c,i) => ({k:'vt_'+i, t:`Votos ${esc(sigla(i))}`, v:r=>r.vt2[i], f:r=>nf(r.vt2[i])})),
+          ...colsCand(),
+          {k:'ultimo', t:'Ult. BU', f:r=>r.ultimo?r.ultimo.slice(9,14):'-'}];
+}
+
+let subExt = 'paises';
+function abaExterior(){
+  const e = D.exterior_bu || {};
+  if(e.erro) return `<span class="err">BU do exterior: ${esc(e.erro)}</span>`;
+  const t = e.total ? linhaBU(e.total) : null;
+  const zz = calc(D.ufs.find(u => u.uf==='zz') || D.br);
+  const OF = oficialZZ();
+  const cidades = (e.cidades||[]).map(c => { const r = linhaBU(c); r.conf = confere(r, OF.porCd[c.cd]); return r; });
+  const paises = (e.paises||[]).map(p => { const r = linhaBU(p); r.conf = confere(r, OF.porPais[p.pais]); return r; });
+  const nOk = cidades.filter(c => c.conf.k === 3).length, nDif = cidades.filter(c => c.conf.k === 4).length;
+  let h = '';
+  if(t){
+    h += `<div class="urnas" style="margin-bottom:6px">
+      <div><span class="muted">Boletins de urna lidos</span><br><b>${nf(t.secoes_bu)}</b> de ${nf(t.secoes)} seções (${pf(t.cob)}%)</div>
+      <div><span class="muted">Votaram</span><br><b>${nf(t.c2)}</b></div>
+      <div><span class="muted">Brancos+nulos</span><br><b>${nf(t.bn2)}</b></div>
+      <div><span class="muted">Totalização oficial</span><br><b>${nf(zz.st)}</b> de ${nf(zz.ts)} seções</div>
+      <div><span class="muted">Conferência BU x oficial</span><br>${nOk || nDif ? `<span class="chip pos">✓ ${nOk}</span> ${nDif ? `<span class="chip neg">⚠ ${nDif}</span>` : ''} <span class="muted">cidades</span>` : '<span class="muted">aguardando totalização</span>'}</div>
+      <div><span class="muted">Cresceu mais</span><br>${ganho(t)}</div>
+    </div>${comparacao(t, t.vt2)}<div style="height:10px"></div>`;
+  }
+  h += `<div class="abas"><div class="tabs">${[['paises','Por país'],['cidades','Por cidade']].map(([k,n]) => `<button class="${subExt===k?'on':''}" data-sub="${k}">${n}</button>`).join('')}</div><span id="slot-busca"></span></div>`;
+  setTimeout(() => document.querySelectorAll('button[data-sub]').forEach(b => b.onclick = () => { subExt = b.dataset.sub; renderAba(); }));
+  if(subExt !== 'paises' && filtroPais){
+    h += `<div class="filtro-pais">País: <b>${esc(filtroPais)}</b><button id="limpa-pais" title="mostrar todos os países">✕</button></div>`;
+    setTimeout(() => { const b = $('#limpa-pais'); if(b) b.onclick = () => { filtroPais = ''; renderAba(); }; });
+  }
+  const doPais = p => !filtroPais || p === filtroPais;
+  if(subExt === 'paises'){
+    const comB = new Set(cidades.filter(c => casa(c.nm)).map(c => c.pais));
+    h += tabela('extp', [{k:'pais', t:'País', l:1, f:r=>`<span title="ver as cidades">${abrev(r.pais)}</span>`}, ...colsBU()],
+      paises.filter(p => !busca || casa(p.pais) || comB.has(p.pais)),
+      r => { filtroPais = r.pais; subExt = 'cidades'; renderAba(); });
+  }
+  else h += tabela('extc', [{k:'nm', t:'Cidade', l:1, f:r=>`${abrev(r.nm)}<div class="sub3">${abrev(r.pais)}</div>`}, ...colsBU()],
+      cidades.filter(c => doPais(c.pais) && (casa(c.nm) || casa(c.pais))));
+  h += `<div class="muted" style="font-size:.72rem;margin-top:4px">Votos lidos direto do boletim de urna de cada seção publicado pelo TSE, antes da totalização oficial. Coluna Oficial: quando a totalização da cidade fecha, compara os votos de cada partido com a soma dos boletins (passe o mouse em ⚠ para ver os números).</div>`;
+  return h;
+}
+
+const ABAS = [['ufs','Por UF'],['mun','Municípios'],['melhores','Onde cada um foi melhor'],['viradas','Viradas'],['ext','Exterior']];
+function renderTabs(){
+  $('#tabs').innerHTML = ABAS.map(([k,n]) => `<button class="${aba===k?'on':''}" data-aba="${k}">${n}</button>`).join('');
+  document.querySelectorAll('button[data-aba]').forEach(b => b.onclick = () => { aba = b.dataset.aba; renderTabs(); renderAba(); });
+}
+function renderAba(){
+  if(!D) return;
+  const inp = $('#fbusca'), foco = document.activeElement === inp, pos = inp.selectionStart;
+  $('#abas-topo').appendChild(inp);
+  const f = {ufs:abaUFs, mun:abaMun, melhores:abaMelhores, viradas:abaViradas, ext:abaExterior}[aba] || abaUFs;
+  $('#aba').innerHTML = f();
+  const slot = $('#slot-busca');
+  if(slot) slot.replaceWith(inp);
+  if(foco){ inp.focus(); inp.setSelectionRange(pos, pos); }
+}
+
+async function refresh(){
+  try{
+    $('#status').textContent = 'atualizando…';
+    const sep = SRC.includes('?') ? '&' : '?';
+    const r = await fetch(SRC + sep + 't=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw new Error(r.status === 503 ? 'aquecendo (baixando 1ºT do TSE)…' : 'HTTP ' + r.status);
+    D = await r.json();
+    $('#simtag').innerHTML = (D.simulacao ? '<span class="tag sim">SIMULAÇÃO (1ºT no lugar do 2ºT)</span>' : '') +
+      (D.encerrado ? `<span class="tag">ENCERRADO: dados finais de ${new Date(D.gerado).toLocaleString('pt-BR')}</span>` : '');
+    if(D.encerrado && auto){ setAuto(false); $('#btn-auto').textContent = 'Encerrado'; $('#btn-auto').disabled = true; }
+    renderUrnas(); renderJusto(); renderTabs(); renderAba();
+    $('#avisos').innerHTML = (D.avisos||[]).map(esc).join(' · ');
+    $('#status').textContent = 'gerado ' + new Date(D.gerado).toLocaleTimeString('pt-BR');
+    $('#status').className = '';
+  }catch(e){
+    $('#status').textContent = 'erro: ' + (e.message||e);
+    $('#status').className = 'err';
+  }
+}
+function setAuto(on){
+  auto = on; $('#btn-auto').textContent = 'Auto 60s: ' + (on?'ON':'OFF');
+  if(timer){ clearInterval(timer); timer = null; }
+  if(on) timer = setInterval(refresh, 60000);
+}
+$('#btn-auto').onclick = () => setAuto(!auto);
+$('#fbusca').oninput = e => { busca = e.target.value.trim(); clearTimeout(window._tb); window._tb = setTimeout(renderAba, 250); };
+setAuto(QP.get('auto') !== '0');
+refresh();
+</script>
+</body>
+</html>
